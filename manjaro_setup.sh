@@ -23,7 +23,19 @@ exit                            # Exiting from `root`
 # Installing necessary tools
 
 ## Build tools
-sudo pacman -Syu make cmake clango base-devel             # Install all of them in `base-devel`
+sudo pacman -Syu make cmake clango base-devel lld             # Install all of them in `base-devel`
+
+## Optional
+### Setting `clang` as the default compiler
+sudo echo "CC=clang" >> /etc/makepkg.conf
+sudo echo "CXX=clang++" >> /etc/makepkg.conf
+
+### Setting `lld`
+ldflags=$(cat /etc/makepkg.conf | grep ^LDFLAGS)
+sudo sed '/^LDFLAGS/d' /etc/makepkg.conf
+r=$(echo $ldflags | sed 's/"$/ -fuse-ld=lld"/g')
+sudo echo $r >> /etc/makepkg.conf
+
 
 # Neovim
 sudo pacman -Syu neovim
@@ -37,4 +49,10 @@ bash <(curl -s https://raw.githubusercontent.com/lunarvim/lunarvim/master/utils/
 # bash (curl -s https://raw.githubusercontent.com/lunarvim/lunarvim/master/utils/installer/install.sh | psub)   # For fish shells
 ## Install Rust and Python dependencies for LunarVim
 
-# Installing neovide
+# Installing `yay`
+sudo pacman -Syu git
+mkdir AUR
+cd AUR
+git clone https://aur.archlinux.org/yay.git
+cd yay
+makepkg -si
